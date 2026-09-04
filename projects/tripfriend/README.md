@@ -1,0 +1,187 @@
+# TripFriend 리뷰·댓글 QA 사례 연구
+
+## 한눈에 보기
+
+TripFriend는 여행지 정보와 사용자 후기·댓글 기능을 제공하는 팀 프로젝트입니다. Java/Spring 완성본의 리뷰·댓글 영역을 주 대상으로 삼아 요구사항 분석, 위험 기반 계획, 계층별 테스트, 실제 API·브라우저 검증, 결함 분석과 회귀 자동화까지 연결했습니다.
+
+| 구분 | 내용 |
+|---|---|
+| 기준 제품 | `tripfriend-spring` `main` · `e2431223ce2a18c8f944d544cba76b951ce0356d` |
+| 주 테스트 범위 | 리뷰·댓글 CRUD, 인증·권한, 입력 경계, 검색·정렬, API·UI 계약 |
+| 환경 | Java 17, Spring Boot 3.2.4, H2, 비저장 Redis, Next.js, Chrome |
+| 자동화 | JUnit 5·Mockito·MockMvc·Repository/H2·Spring Security, Postman, Playwright |
+| 핵심 테스트 결과 | 49건 모두 제품 판정 단계 도달 · 43 Pass·6 Fail·0 Blocked·0 Not Run |
+| 결함 | TF-BUG-001~015 · 제품 결함 14건 Open·테스트 구성 오탐 1건 Closed |
+
+## 역할과 검증 원칙
+
+### 이번 포트폴리오의 QA 활동
+
+- 요구사항과 코드 계약을 비교해 테스트 베이시스와 추적표 작성
+- 사용자 영향과 발생 가능성에 따른 위험 기반 우선순위 결정
+- 핵심 테스트 49건과 경계값·권한·데이터 격리 전략 설계
+- Java/Spring 계층별 테스트와 Postman API 시나리오 구현·실행
+- localhost 실제 API·브라우저 흐름 검증과 수동 탐색
+- Playwright 정상 회귀·등록 결함 재현 자동화와 테스트 데이터 정리
+- 실행 결과, 증거, 결함, 재검증 조건의 추적성 관리
+
+### 과거 개발 기여와의 분리
+
+리뷰·댓글 CRUD, 리뷰 목록·평점·조회수·인기글, 담당 화면과 API 연동, Kotlin 리뷰 영역 마이그레이션에 참여했습니다. 회원·JWT·Security·OAuth·여행지 등 팀원 또는 공동 구현 영역은 단독 기여로 주장하지 않습니다.
+
+개발 경험 때문에 구현 의도를 이미 안다는 점이 테스트 편향으로 이어질 수 있다고 판단했습니다. 기억에 의존하지 않고 요구사항·API 계약·실제 응답을 다시 대조했으며, 원본 제품을 임의로 수정하지 않고 별도 QA 환경에서 검증 조건만 교정했습니다.
+
+## QA 접근 방식
+
+### 1. 요구사항에서 결함까지 연결
+
+다음 흐름을 공통 식별자로 추적했습니다.
+
+> Requirement / Observation → Risk → Test Condition → Test Case → Execution → Evidence → Defect → Retest
+
+예를 들어 리뷰 수정 계약은 `TF-REQ-007 → TF-RISK-001 → TF-COND-003 → TF-TC-008 → TF-EXEC-003·004 → TF-BUG-001`로 연결됩니다. 자연어 설명과 내부 ID를 함께 사용해 결함 보고서에서 기대 결과의 출처와 재현 테스트를 역으로 찾을 수 있게 했습니다.
+
+### 2. 위험 기반 우선순위
+
+- **P0:** 사용자 영향과 위험도가 높아 가장 먼저 실행한 핵심 CRUD·권한·입력 경계·오류 계약
+- **P1:** 조합 검색·정렬, 페이지네이션, CORS, 조회수, 오류 표시
+- **P2:** 이미지, 인기 점수, 동시성, 성능, Kotlin 전체 회귀
+
+P0/P1/P2는 결함 심각도가 아니라 테스트 실행 우선순위입니다. 모든 기능을 같은 깊이로 검증하기보다 사용자 흐름과 데이터 무결성에 영향이 크고 반복 확인 비용이 높은 항목을 먼저 선택했습니다.
+
+### 3. 실패를 바로 제품 결함으로 계산하지 않기
+
+| 상태 | 적용 기준 |
+|---|---|
+| Pass | 기대 결과와 실제 결과가 일치하고 제품 동작까지 확인 |
+| Fail | 제품 동작과 기대 결과를 비교한 단계에서 불일치 확인 |
+| Blocked | 환경·테스트 데이터·테스트 구성 문제로 제품 판정 단계에 도달하지 못함 |
+| Not Run | 실행하지 않았거나 실행 근거가 없음 |
+
+컴파일 성공을 기능 Pass로 계산하지 않았고, Playwright가 표시한 원시 실패도 환경 문제·테스트 판정 기준 문제·제품 Fail로 다시 분류했습니다.
+
+## 실행 결과와 의미
+
+| 실행 묶음 | 결과 | 해석 |
+|---|---|---|
+| Java/Spring 핵심 테스트 49건 | **43 Pass·6 Fail** | 테스트 구성 오탐을 교정해 과거 Blocked 5건을 다시 판정했고, 남은 6건은 Open 결함과 연결했습니다. |
+| 실제 서버 API·브라우저 통합 검증 8건 | **7 Pass·1 Fail** | 실제 localhost API, 인증 리뷰 생성·조회, 브라우저 CORS와 UI 흐름을 판정했습니다. |
+| 댓글·입력 중심 API 추가 검증 7건 | **5 Pass·2 Fail** | 정상 댓글 흐름은 통과했고 TF-BUG-003·006을 실제 HTTP 수준에서 다시 확인했습니다. |
+| 수동 프런트 탐색 | **관찰 6건 등록** | 전체 실행 시나리오 수가 확인되지 않아 `6 Fail`로 합산하지 않고 관찰·코드 상관 분석으로 기록했습니다. |
+| Playwright 정상 회귀 | **5/5 Pass** | 로그인, 검색, 리뷰 작성·수정·삭제, 댓글 등록의 핵심 경로를 별도 QA 환경에서 확인했습니다. |
+| 등록 결함 재현 자동화 | **3/3 재현** | TF-BUG-010·014를 예상대로 검출했습니다. 자동화 오류가 아니므로 정상 회귀 성공률과 분리했습니다. |
+
+상세 수치와 실행 ID는 [최종 QA 결과와 판단 기준](reports/tripfriend-stage-8-results-summary.md)과 [핵심 백엔드 테스트 실행 보고서](reports/p0-backend-test-execution-report.md)에서 확인할 수 있습니다.
+
+![테스트 구성 교정 후 최종 백엔드 회귀 실행 결과](evidence/TF-S8-EXEC-003-review-controller-user-run.png)
+
+> 실제 응답 처리 구조를 포함해 다시 실행한 결과 12개 중 10개가 통과했고, 평점 경계값 2건에서는 기존 오류 계약 불일치를 재현했습니다.
+
+![핵심 API 추가 검증의 Postman Runner 화면](evidence/TF-S8-POSTMAN-EXEC-001-run-summary-user.png)
+
+> Runner는 42개 assertion 중 41개 통과로 표시됐지만 요청별 실제 응답을 다시 검토해 신규 7건을 5 Pass·2 Fail로 판정했습니다. 화면의 초록색 개수와 QA 판정을 동일시하지 않았습니다.
+
+## 대표 결함과 나만의 QA 판단
+
+### 리뷰 수정 폼의 기존 값 미초기화(TF-BUG-015)
+
+**상황과 고민:** 리뷰 수정·삭제 자동화가 필수 입력값 단계에서 반복 중단됐습니다. 제품 문제로 바로 등록할지, 테스트가 비동기 초기화를 충분히 기다리지 못한 것인지 먼저 확인해야 했습니다.
+
+**판단과 검증:** 처음에는 동기화 가능성을 두고 Blocked로 보류했습니다. 기존 제목·내용·여행지·평점을 기다리는 assertion을 추가했지만 제목이 계속 빈 값이었고, Next.js 동적 route 처리라는 첫 가설을 교정한 뒤에도 같은 실패가 유지됐습니다. 상세 API 응답과 테스트 데이터가 정상인 점을 확인해 수정 폼의 비동기 초기값 반영 문제로 범위를 좁혔습니다.
+
+**결론과 원칙:** 별도 QA 환경에서 데이터 로딩 완료 후 폼을 렌더하도록 교정하자 단일 재검증과 정상 회귀 5건 전체가 통과했습니다. 원본 제품은 수정하지 않았으므로 결함은 Open으로 유지했습니다. 이 경험을 통해 자동화 코드 교정, QA 환경 교정, 제품 수정 완료를 서로 다른 상태로 관리하게 됐습니다.
+
+[상세 결함 보고서](defects/TF-BUG-015-review-edit-form-initial-values-empty.md)
+
+### 제품 결함이 아니었던 테스트 구성 오탐(TF-BUG-002)
+
+**상황과 고민:** 독립형 MockMvc 테스트에서는 리뷰 생성이 HTTP 200으로 보여 제품 결함으로 의심했습니다. 하지만 테스트 실패만으로 제품 결함을 확정해도 되는지 다시 확인했습니다.
+
+**판단과 검증:** 실제 localhost 서버에서 같은 계약을 확인하자 정상적인 HTTP 201을 반환했습니다. 기존 테스트에 실제 응답을 변환하는 `ResponseAspect`가 포함되지 않은 것이 차이였습니다.
+
+**결론과 원칙:** 제품 결함이 아닌 테스트 구성 오탐으로 Closed 처리하고, 실제 구성에 가까운 Web MVC slice로 연결 테스트 5건을 다시 실행해 Pass로 교정했습니다. 이후 테스트 실패를 결함으로 등록하기 전에 실제 제품 판정 단계에 도달했는지를 먼저 확인하는 기준을 세웠습니다.
+
+![실제 서버에서 확인한 인증 리뷰 생성 HTTP 201](evidence/stage-07/TF-S7-EXEC-005-postman-authenticated-review-create-pass.png)
+
+> 실제 서버의 HTTP 201 응답을 반증 근거로 사용해 기존 실패를 제품 결함이 아닌 테스트 구성 문제로 재분류했습니다.
+
+[상세 결함 보고서](defects/TF-BUG-002-review-create-http-status-200.md)
+
+### 제품 오류와 초록색 테스트를 함께 의심한 사례(TF-BUG-006)
+
+**상황과 고민:** 댓글 생성 요청의 `reviewId` 누락·null 문제를 확인하던 중 Postman은 3개 assertion을 모두 통과로 표시했지만 실제 응답은 HTTP 401·빈 본문이었습니다. 초록색 결과를 그대로 신뢰할 수 있는지 검토했습니다.
+
+**판단과 검증:** 넓은 `4xx` assertion이 인증 실패까지 정상처럼 허용한다는 점을 확인했습니다. 인증 토큰 사전조건, 정확한 HTTP 400, 401/403 미발생, JSON 오류 본문을 함께 확인하도록 판정 기준을 좁혔습니다.
+
+**결론과 원칙:** 같은 잘못된 응답을 새 assertion이 모두 실패로 검출했습니다. 제품 입력 검증 문제와 테스트 코드의 거짓 통과를 별도 원인으로 관리했으며, 이후 정상 입력의 Pass뿐 아니라 잘못된 결과를 테스트가 실제로 거부하는지도 확인하게 됐습니다.
+
+| 판정 기준 교정 전 | 판정 기준 교정 후 |
+|---|---|
+| ![HTTP 401과 빈 본문을 잘못 통과시킨 Postman 결과](evidence/TF-S8-POSTMAN-006-null-review-id-user.png) | ![강화한 assertion이 동일 응답을 실패로 검출한 결과](evidence/TF-S8-POSTMAN-RETEST-001-null-review-id-assertion-user.png) |
+| 실제 응답은 잘못됐지만 넓은 4xx 조건으로 Passed | 상태·인증·본문 조건을 강화해 잘못된 응답을 검출 |
+
+[상세 결함 보고서](defects/TF-BUG-006-comment-review-id-null-request-processing-exception.md)
+
+### API 단독 성공과 브라우저 실패 비교(TF-BUG-007)
+
+같은 공개 조회가 curl·Postman에서는 HTTP 200이지만 Chrome에서는 OPTIONS preflight 403으로 차단됐습니다. CORS 허용 Origin 설정이 두 번째 setter 호출로 덮어써지는 점을 코드와 연결하고, 별도 QA 환경에서 두 Origin을 하나의 목록으로 합친 뒤 Place·Review 200, 리뷰 카드 표시, 정상 빈 검색 결과를 재검증했습니다. QA 환경의 Pass를 원본 제품 수정 완료로 표현하지 않고 결함은 Open으로 유지했습니다.
+
+[상세 결함 보고서](defects/TF-BUG-007-localhost-cors-preflight-blocked.md)
+
+## 자동화 전략
+
+| 도구 | 사용 목적 | 선택 이유와 한계 |
+|---|---|---|
+| JUnit 5·Mockito | Service 분기와 협력 객체 계약 | 빠른 격리 검증에 사용하며 HTTP·실제 DB 결과로 확장 해석하지 않음 |
+| MockMvc | Controller 입력·권한·응답 계약 | 실제 응답 변환 구성의 포함 여부를 명시 |
+| Repository/H2 | 정렬·조회·영속성 결과 | 외부 MySQL과 동일하다고 주장하지 않음 |
+| Spring Security Test | 인증·비인증·작성자 권한 | 실제 OAuth·운영 인증 흐름은 별도 범위 |
+| Postman | 실제 localhost HTTP 시나리오 | 환경 템플릿에는 비밀값을 넣지 않고 assertion의 거짓 통과도 재검증 |
+| Playwright | 반복 비용이 높은 핵심 사용자 흐름 | 정상 회귀 5개와 등록 결함 재현 3개를 분리하고 테스트 데이터를 실행 후 정리 |
+
+수동 탐색에서 발견한 모든 항목을 자동화하지 않았습니다. 비즈니스 중요도, 기능 연결성, 반복 비용, 회귀 위험, locator와 합격·실패 기준의 안정성을 바탕으로 선별했습니다.
+
+- [Java/Spring 자동화 안내](automation/README.md)
+- [Playwright 자동화 코드와 실행 안내](automation/playwright/)
+- [Postman Collection과 환경 템플릿](api/postman/)
+
+## 개인 QA 수행 방식의 개선
+
+| 초기 방식 | 개선한 방식 |
+|---|---|
+| 테스트 결과와 증거가 문서별로 분산 | 요구사항부터 결함·재검증까지 ID로 연결 |
+| Fail을 하나의 상태로 취급 | 제품·테스트 구성·환경·등록 결함 재현으로 분류 |
+| 반복 경로를 수동으로 확인 | 핵심 정상 경로를 Playwright 회귀 테스트로 전환 |
+| 실행 화면의 초록색 결과 중심 | assertion이 잘못된 결과를 실제로 거부하는지도 확인 |
+| 첫 원인 가설 중심 | 검증과 반증 이력을 모두 보존하고 원인 범위를 축소 |
+
+그 결과 TF-BUG-002처럼 잘못 등록한 결함을 철회하고, TF-BUG-006처럼 테스트 코드의 거짓 통과를 발견했으며, TF-BUG-015에서는 반증된 가설까지 보존하면서 제품 문제의 범위를 좁힐 수 있었습니다.
+
+## 주요 산출물
+
+| 확인 목적 | 산출물 |
+|---|---|
+| 전체 결과와 판단 경계 | [최종 QA 결과 요약](reports/tripfriend-stage-8-results-summary.md) |
+| 테스트 전략과 우선순위 | [리스크 기반 테스트 계획](test-plan/risk-based-test-plan.md) |
+| 요구사항 추적 | [요구사항-코드 추적표](test-plan/requirements-code-traceability.md) |
+| 핵심 테스트 상세 케이스 | [테스트케이스 49건](test-cases/p0-review-comment-test-cases.md) |
+| 백엔드 실행 근거 | [백엔드 테스트 실행 보고서](reports/p0-backend-test-execution-report.md) |
+| 실제 API·UI 흐름 | [API·프런트 실행 보고서](reports/api-frontend-flow-execution-report.md) |
+| 수동 탐색 | [프런트 탐색 보고서](reports/manual-frontend-exploration-report.md) |
+| 결함 전체 기록 | [TF-BUG-001~015](defects/) |
+| 자동화 구현 | [Java/Spring](automation/) · [Playwright](automation/playwright/) · [Postman](api/postman/) |
+| 대표 실행 증거 | [공개 적합성 검토 완료 증거](evidence/) |
+
+## 검증 범위의 한계
+
+- 외부 MySQL, OAuth, 메일, 배포 환경, 성능, 동시성, Kotlin 전체 회귀는 실행하지 않았습니다.
+- H2·Mock 기반 결과를 운영 환경 전체의 품질로 일반화하지 않습니다.
+- 수동 탐색 6건은 전체 실행 시나리오 수가 없어 별도 성공률을 만들지 않았습니다.
+- 별도 QA 환경의 교정·Pass는 원본 제품의 수정 완료나 결함 Closed를 의미하지 않습니다.
+- 정책이 명시되지 않은 TF-BUG-012와 환경 제한 관찰인 TF-BUG-013은 확정 범위를 제한했습니다.
+
+## AI 활용
+
+Codex는 코드 탐색, 테스트·문서 초안, 오류 분석을 보조했습니다. 테스트 범위, 합격·실패 기준, 위험 우선순위와 최종 판정은 작성자가 검토했고 IntelliJ·Postman·Chrome·Playwright에서 대표 실행과 증거를 직접 확인했습니다.
+
+[포트폴리오 첫 화면으로 돌아가기](../../README.md) · [용어와 식별자 안내](../../shared/glossary.md)

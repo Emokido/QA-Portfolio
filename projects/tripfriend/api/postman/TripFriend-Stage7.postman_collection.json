@@ -1,0 +1,331 @@
+{
+  "info": {
+    "_postman_id": "7d5f767e-d2c1-4b94-a551-9e7609010001",
+    "name": "TripFriend Stage 7",
+    "description": "Stage 7 API·프런트 흐름 검증용 Collection. QA-PORTFOLIO.md와 승인된 테스트계획을 기준으로 사용하며 실제 비밀값을 저장하지 않는다.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "01 Public Review",
+      "description": "비로그인 공개 리뷰 조회와 빈 결과 계약을 검증한다.",
+      "item": [
+        {
+          "name": "TF-TC-001 공개 리뷰 목록 조회",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 상태는 200이다\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Content-Type은 JSON이다\", function () {",
+                  "    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+                  "});",
+                  "",
+                  "const body = pm.response.json();",
+                  "",
+                  "pm.test(\"응답 코드는 200-5이다\", function () {",
+                  "    pm.expect(body.code).to.eql(\"200-5\");",
+                  "});",
+                  "",
+                  "pm.test(\"data는 1개 이상의 리뷰를 가진 배열이다\", function () {",
+                  "    pm.expect(body).to.have.property(\"data\");",
+                  "    pm.expect(body.data).to.be.an(\"array\");",
+                  "    pm.expect(body.data.length).to.be.above(0);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/reviews?sort=newest&page=0",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "reviews"],
+              "query": [
+                {"key": "sort", "value": "newest"},
+                {"key": "page", "value": "0", "description": "현재 백엔드는 이 파라미터를 소비하지 않는다. Stage 7에서 실제 동작을 관찰한다."}
+              ]
+            },
+            "description": "TF-TC-001. 비로그인 상태에서 공개 리뷰 목록을 조회한다. 기대 결과는 HTTP 200, code 200-5, data 배열이다."
+          },
+          "response": []
+        },
+        {
+          "name": "TF-TC-049 검색 결과 없음",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 상태는 200이다\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Content-Type은 JSON이다\", function () {",
+                  "    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+                  "});",
+                  "",
+                  "const body = pm.response.json();",
+                  "",
+                  "pm.test(\"응답 코드는 200-5이다\", function () {",
+                  "    pm.expect(body.code).to.eql(\"200-5\");",
+                  "});",
+                  "",
+                  "pm.test(\"검색 결과는 빈 배열이다\", function () {",
+                  "    pm.expect(body).to.have.property(\"data\");",
+                  "    pm.expect(body.data).to.be.an(\"array\").that.is.empty;",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/reviews?sort=newest&keyword=stage7_no_result_20260901",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "reviews"],
+              "query": [
+                {"key": "sort", "value": "newest"},
+                {"key": "keyword", "value": "stage7_no_result_20260901"}
+              ]
+            },
+            "description": "TF-TC-049. 존재하지 않는 제목 키워드로 조회한다. 기대 결과는 HTTP 200, code 200-5, 빈 data 배열이다."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "02 Authenticated Review",
+      "description": "로컬 H2 테스트 회원과 임시 Redis를 사용해 비로그인 차단, 로그인, Bearer 리뷰 생성과 내 리뷰 저장을 검증한다. 실계정·운영 토큰은 사용하지 않는다.",
+      "item": [
+        {
+          "name": "TF-S7-EXEC-004 비로그인 리뷰 생성 차단",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"인증 없는 리뷰 생성은 HTTP 401로 차단된다\", function () {",
+                  "    pm.response.to.have.status(401);",
+                  "});",
+                  "",
+                  "pm.test(\"성공 코드 201-1이 반환되지 않는다\", function () {",
+                  "    pm.expect(pm.response.text()).to.not.include(\"201-1\");",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json", "type": "text"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Stage7 비로그인 차단 확인\",\n  \"content\": \"인증되지 않은 요청은 리뷰를 생성할 수 없어야 합니다.\",\n  \"rating\": 4.5,\n  \"placeId\": 1\n}",
+              "options": {"raw": {"language": "json"}}
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/reviews",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "reviews"]
+            },
+            "description": "TF-TC-020 실제 서버 확인. Authorization과 Cookie 없이 유효한 생성 본문을 보내 Security에서 HTTP 401로 차단되는지 검증한다."
+          },
+          "response": []
+        },
+        {
+          "name": "TF-S7-PREP-007 로컬 테스트 회원 로그인",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"로그인은 HTTP 200이다\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Content-Type은 JSON이다\", function () {",
+                  "    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+                  "});",
+                  "",
+                  "const body = pm.response.json();",
+                  "",
+                  "pm.test(\"응답 코드는 200-1이다\", function () {",
+                  "    pm.expect(body.code).to.eql(\"200-1\");",
+                  "});",
+                  "",
+                  "pm.test(\"로컬 테스트 액세스 토큰이 발급된다\", function () {",
+                  "    pm.expect(body).to.have.nested.property(\"data.accessToken\");",
+                  "    pm.expect(body.data.accessToken).to.be.a(\"string\").and.not.empty;",
+                  "});",
+                  "",
+                  "if (body && body.data && body.data.accessToken) {",
+                  "    pm.environment.set(\"accessToken\", body.data.accessToken);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json", "type": "text"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"{{testUsername}}\",\n  \"password\": \"{{testPassword}}\"\n}",
+              "options": {"raw": {"language": "json"}}
+            },
+            "url": {
+              "raw": "{{baseUrl}}/member/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["member", "login"]
+            },
+            "description": "실계정이 아닌 BaseInitData 로컬 H2 테스트 회원으로 로그인한다. 발급 토큰은 사용자의 비공개 Postman Environment 로컬 값에만 임시 저장한다."
+          },
+          "response": []
+        },
+        {
+          "name": "TF-S7-EXEC-005 인증 리뷰 생성",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.environment.set(\"stage7ReviewTitle\", `Stage7 인증 리뷰 ${Date.now()}`);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"리뷰 생성 성공 HTTP 상태는 201이다\", function () {",
+                  "    pm.response.to.have.status(201);",
+                  "});",
+                  "",
+                  "pm.test(\"Content-Type은 JSON이다\", function () {",
+                  "    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+                  "});",
+                  "",
+                  "const body = pm.response.json();",
+                  "",
+                  "pm.test(\"응답 코드는 201-1이다\", function () {",
+                  "    pm.expect(body.code).to.eql(\"201-1\");",
+                  "});",
+                  "",
+                  "pm.test(\"생성된 리뷰 ID와 입력 제목이 반환된다\", function () {",
+                  "    pm.expect(body).to.have.nested.property(\"data.reviewId\");",
+                  "    pm.expect(body.data.title).to.eql(pm.environment.get(\"stage7ReviewTitle\"));",
+                  "});",
+                  "",
+                  "if (body && body.data && body.data.reviewId) {",
+                  "    pm.environment.set(\"createdReviewId\", String(body.data.reviewId));",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Content-Type", "value": "application/json", "type": "text"},
+              {"key": "Authorization", "value": "Bearer {{accessToken}}", "type": "text"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"{{stage7ReviewTitle}}\",\n  \"content\": \"Stage7 인증 API와 프런트 흐름을 확인하기 위한 로컬 테스트 리뷰입니다.\",\n  \"rating\": 4.5,\n  \"placeId\": 1\n}",
+              "options": {"raw": {"language": "json"}}
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/reviews",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "reviews"]
+            },
+            "description": "TF-TC-004와 TF-BUG-002 실제 서버 영향 확인. HTTP 201·code 201-1을 기대하며 실제 HTTP 200이면 상태 assertion을 유지한 채 제품 Fail 후보로 기록한다."
+          },
+          "response": []
+        },
+        {
+          "name": "TF-S7-EXEC-006 내 리뷰 저장 확인",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"내 리뷰 조회는 HTTP 200이다\", function () {",
+                  "    pm.response.to.have.status(200);",
+                  "});",
+                  "",
+                  "pm.test(\"Content-Type은 JSON이다\", function () {",
+                  "    pm.expect(pm.response.headers.get(\"Content-Type\")).to.include(\"application/json\");",
+                  "});",
+                  "",
+                  "const body = pm.response.json();",
+                  "",
+                  "pm.test(\"응답 코드는 200-7이다\", function () {",
+                  "    pm.expect(body.code).to.eql(\"200-7\");",
+                  "});",
+                  "",
+                  "pm.test(\"방금 생성한 리뷰가 내 리뷰 배열에 존재한다\", function () {",
+                  "    pm.expect(body.data).to.be.an(\"array\");",
+                  "    const createdId = Number(pm.environment.get(\"createdReviewId\"));",
+                  "    const title = pm.environment.get(\"stage7ReviewTitle\");",
+                  "    const found = body.data.some((review) => review.reviewId === createdId && review.title === title);",
+                  "    pm.expect(found).to.eql(true);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{accessToken}}", "type": "text"}
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/reviews/my",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "reviews", "my"]
+            },
+            "description": "Bearer 인증 사용자의 리뷰 목록에서 TF-S7-EXEC-005가 생성한 reviewId와 고유 제목을 확인한다."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "03 Comment",
+      "description": "후속 승인 후 댓글 조회·생성·수정·삭제 요청을 추가한다.",
+      "item": []
+    },
+    {
+      "name": "04 Validation & Security",
+      "description": "후속 승인 후 입력 경계와 인증·인가 요청을 추가한다.",
+      "item": []
+    },
+    {
+      "name": "05 Defect Retest",
+      "description": "TF-BUG-001~007의 수정 후 재검증 요청은 별도 승인 후 추가한다. TF-BUG-002의 실제 서버 영향 확인은 02 Authenticated Review에 포함한다.",
+      "item": []
+    }
+  ]
+}

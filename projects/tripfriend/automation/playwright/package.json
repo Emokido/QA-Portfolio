@@ -1,0 +1,13 @@
+{
+  "name": "tripfriend-playwright-e2e",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "test:list": "playwright test --list",
+    "test:regression": "playwright test tests/regression",
+    "test:known-defects": "playwright test tests/known-defects"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.55.0"
+  }
+}

@@ -1,0 +1,26 @@
+# Internal QA working materials
+work/
+
+# Secrets and local environment
+.env
+.env.*
+!.env.example
+**/application-secret.yml
+**/application-prod.yml
+**/*.pem
+**/*.key
+
+# Build and dependency outputs
+**/build/
+**/.gradle/
+**/node_modules/
+**/.next/
+
+# Private evidence
+**/evidence/private/
+**/evidence/raw-private/
+
+# Logs and OS files
+*.log
+.DS_Store
+Thumbs.db
