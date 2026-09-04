@@ -1,6 +1,7 @@
 # QA Engineer Portfolio
 
-팀 개발에 참여했던 TripFriend 웹 서비스를 독립적인 QA 대상으로 다시 분석하고, **요구사항 → 위험 → 테스트 → 실행 → 결함 → 재검증**을 증거로 연결한 포트폴리오입니다.
+팀 개발에 참여했던 TripFriend 웹 서비스를 독립적인 QA 대상으로 다시 분석하고,
+**요구사항 → 위험 → 테스트 → 실행 → 결함 → 재검증**을 증거로 연결한 포트폴리오입니다.
 
 [TripFriend QA 사례 연구](projects/tripfriend/README.md) · [최종 결과와 판단 기준](projects/tripfriend/reports/tripfriend-stage-8-results-summary.md) · [자동화 코드](projects/tripfriend/automation/) · [결함 보고서](projects/tripfriend/defects/)
 
