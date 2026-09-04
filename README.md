@@ -1,10 +1,10 @@
-# QA Engineer Portfolio | Hyunmo Park
+# QA Engineer Portfolio
 
-팀 개발에 참여했던 TripFriend 웹 서비스를 독립적인 QA 대상으로 다시 분석하고, **요구사항 → 위험 → 테스트 → 실행 → 결함 → 재검증**을 증거로 연결한 신입 QA/Test Engineer 포트폴리오입니다.
+팀 개발에 참여했던 TripFriend 웹 서비스를 독립적인 QA 대상으로 다시 분석하고, **요구사항 → 위험 → 테스트 → 실행 → 결함 → 재검증**을 증거로 연결한 포트폴리오입니다.
 
 [TripFriend QA 사례 연구](projects/tripfriend/README.md) · [최종 결과와 판단 기준](projects/tripfriend/reports/tripfriend-stage-8-results-summary.md) · [자동화 코드](projects/tripfriend/automation/) · [결함 보고서](projects/tripfriend/defects/)
 
-## 제가 보여 드리는 QA 강점
+## QA 접근 방식
 
 - **실패 분류:** 제품 결함, 테스트 구성 문제, 실행 환경 문제를 같은 실패로 계산하지 않습니다.
 - **추적성:** 요구사항과 관찰 항목을 Risk, Test Condition, Test Case, 실행 결과, Defect까지 연결합니다.
@@ -21,7 +21,7 @@
 | **등록된 결함 3/3 재현** | 자동화 오류가 아니라 이미 알려진 TF-BUG-010·014를 테스트가 예상대로 검출한 결과입니다. 정상 회귀 성공률과 분리했습니다. |
 | **결함 기록 15건 — 14 Open·1 Closed** | 제품 결함 14건과 테스트 구성 오탐 1건을 구분하고 재현·영향·한계·재검증 조건을 남겼습니다. |
 
-## 제가 중요하게 생각한 QA 판단
+## 결과를 해석한 기준
 
 테스트가 실패했다는 사실만으로 제품 결함을 선언하지 않았습니다. 실제 제품 동작까지 확인했는지, 테스트 구성이 운영 응답 구조를 반영했는지, 환경 문제로 검증이 중단된 것은 아닌지를 먼저 구분했습니다. 반대로 테스트가 초록색이어도 잘못된 응답을 허용하는지 확인해 판정 기준 자체를 다시 검증했습니다.
 
