@@ -2,7 +2,7 @@
 
 ## 목적
 
-이 폴더는 TripFriend의 실제 HTTP API 흐름을 사용자가 Postman에서 직접 재현하기 위한 공개 실행 자산이다. 초기 API 검증 자산인 `Stage7` Collection은 비로그인 공개 리뷰와 인증 리뷰 생성 흐름을 보존합니다. 이후 확장한 `Stage8` Collection은 댓글 CRUD, 인증, 입력 검증, 기존 결함 확인 7개 요청을 추가했습니다.
+이 폴더는 TripFriend의 실제 HTTP API 흐름을 사용자가 Postman에서 직접 재현하기 위한 공개 실행 자산입니다. 초기 API 검증 자산인 `Stage7` Collection은 비로그인 공개 리뷰와 인증 리뷰 생성 흐름을 보존하며 이후 확장한 `Stage8` Collection은 댓글 CRUD, 인증, 입력 검증, 기존 결함 확인 7개 요청을 추가했습니다.
 
 
 Collection은 실행 도구이며 [최신 결과 요약](../../reports/tripfriend-stage-8-results-summary.md)과 [댓글 Controller 교정 결과](../../reports/portfolio-review-correction-report.md)가 공개 판정 근거다.
@@ -28,7 +28,7 @@ Collection은 실행 도구이며 [최신 결과 요약](../../reports/tripfrien
 
 ## 인증 리뷰 API 실행 (Stage 7 이력)
 
-사전조건은 H2 백엔드 8080과 격리된 임시 Redis다. 브라우저 흐름을 함께 확인할 때만 프런트 3000이 필요하다. 기존 Windows Redis 6379를 사용하지 않고 QA 실행 설정의 임시 Redis 6380을 사용한다. 실제 계정 대신 `BaseInitData`의 로컬 테스트 회원을 사용한다.
+사전조건은 H2 백엔드 8080과 격리된 임시 Redis다. 브라우저 흐름을 함께 확인할 때만 프런트 3000이 필요하다. 기존 Windows Redis 6379를 사용하지 않고 QA 검증용 설정의 임시 Redis 6380을 사용한다. 실제 계정 대신 `BaseInitData`의 로컬 테스트 회원을 사용한다.
 
 1. Environment의 `testUsername`과 `testPassword`에 직접 준비한 로컬 테스트 값만 입력한다. 공개 파일이나 스크린샷에는 남기지 않는다.
 2. `TF-S7-EXEC-004 비로그인 리뷰 생성 차단`을 보내고 2/2 Passed와 HTTP 401을 확인한다.
@@ -39,7 +39,7 @@ Collection은 실행 도구이며 [최신 결과 요약](../../reports/tripfrien
 
 ## 댓글·입력 검증 API 실행 (Stage 8)
 
-Stage 8의 상세 목적·오라클·중단 조건은 [Postman 테스트 계획](../../test-plan/postman-stage-8-test-plan.md)를 사용한다. JUnit P0 경계를 모두 반복하지 않고 실제 HTTP 계약과 요청 간 데이터 연결을 보여주는 대표 7개만 실행한다.
+Stage 8의 상세 목적·기대 결과 기준·중단 조건은 [Postman 테스트 계획](../../test-plan/postman-stage-8-test-plan.md)를 사용한다. JUnit P0 경계를 모두 반복하지 않고 실제 HTTP 계약과 요청 간 데이터 연결을 보여주는 대표 7개만 실행한다.
 
 1. 먼저 `02 Authenticated Review`의 로그인·리뷰 생성·내 리뷰 저장 확인을 완료해 `accessToken`과 `createdReviewId`를 준비한다.
 2. `03 Comment / TF-S8-POSTMAN-001 인증 댓글 생성`을 보낸다. 기대 HTTP 201·code `201-1`이며, TF-BUG-004는 테스트 구성 오탐으로 Closed됐다. 실제 서버에서 200이 관찰되면 환경·구성과 원시 응답을 새로 확인하며 과거 결함 재현으로 자동 분류하지 않는다.
@@ -57,7 +57,7 @@ Stage 8의 상세 목적·오라클·중단 조건은 [Postman 테스트 계획]
 - `TF-S8-POSTMAN-EXEC-001`은 13개 요청·42개 assertion을 완료했고 Postman 화면에는 41 Passed·1 Failed·0 Errors로 표시됐다.
 - TF-S8-POSTMAN-007은 실제 `400-1`로 TF-BUG-003을 재현했다.
 - TF-S8-POSTMAN-006은 HTTP 401·빈 본문인데도 최초의 넓은 4xx assertion 때문에 통과한 테스트 오탐이었다. 추가 재현과 제한된 진단에서 기존 TF-BUG-006 경로로 판정했다.
-- 최신 Collection에서는 006의 assertion을 교정했다. 사용자 TF-S8-POSTMAN-RETEST-001에서 로그인 후 006을 재실행해 HTTP 401·빈 본문을 0/3 Failed로 정상 탐지했다. 제품 요청은 TF-BUG-006 연결 Fail, assertion 교정 재검증은 Pass다.
+- 최신 Collection에서는 006의 assertion을 교정했다. 사TF-S8-POSTMAN-RETEST-001 재실행에서 로그인 후 006을 재실행해 HTTP 401·빈 본문을 0/3 Failed로 정상 탐지했다. 제품 요청은 TF-BUG-006 연결 Fail, assertion 교정 재검증은 Pass다.
 
 브라우저에서는 같은 로컬 테스트 회원으로 로그인한 뒤 `/community/write`에서 이미지 없이 리뷰를 작성한다. Network의 로그인·리뷰 생성·목록 요청 상태와 최종 리뷰 카드만 확인하며, 비밀번호·Authorization·Cookie·응답 토큰이 보이는 화면은 캡처하지 않는다.
 
