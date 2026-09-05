@@ -1,5 +1,7 @@
 # TripFriend 테스트 환경 감사
 
+> 이 문서는 작성 당시의 설계·감사·계획 기준선입니다. 아래 상태와 미실행 표현은 해당 기록 시점에 한정됩니다. [최신 결과 요약](../reports/tripfriend-stage-8-results-summary.md)과 [2026-09-05 교정 결과](../reports/portfolio-review-correction-report.md)를 함께 확인하십시오.
+
 - 문서 상태: `Stage 3 Baseline`
 - 기준 프로젝트: 스프린트 1 Java/Spring
 - 저장소: `https://github.com/Emokido/tripfriend-spring`

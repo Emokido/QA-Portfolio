@@ -1,5 +1,19 @@
 # TripFriend P0 백엔드 테스트 실행 보고서
 
+## 최신 판정 — 2026-09-05 제출본 교정
+
+**누적 P0 45 Pass·4 Fail·0 Blocked·0 Not Run.** TF-REVIEW-EXEC-001에서 댓글 경계 4개가 모두 Pass해 TF-TC-040·041의 테스트 구성 오탐을 정정했다. TF-BUG-004는 제품 결함이 아닌 테스트 구성 오탐으로 Closed했다. 이번에 P0 전체를 재실행한 것은 아니다.
+
+[교정 구성·4개 실행 결과·판정 범위](portfolio-review-correction-report.md)
+
+## 과거 실행 기록 읽는 방법
+
+아래는 Stage 6·8 당시의 실행·학습 기록이다. 당시의 `현재`, `Open`, `Not Run`과 43 Pass·6 Fail은 해당 기록 시점의 상태이며 위 최신 판정을 대체하지 않는다. 38 Pass·11 Fail → 43 Pass·6 Fail → 45 Pass·4 Fail의 교정 이력을 보존한다.
+
+
+<details>
+<summary>Stage 6·8 실행 이력과 당시 판정 펼치기</summary>
+
 - 문서 상태: `Stage 6 Complete — P0 49/49 실행·Kotlin 제한적 정적 감사·공개 후보 검토와 사용자 단계 완료 승인`
 - 기준 프로젝트: 스프린트 1 Java/Spring 완성본
 - 기준 커밋: `e2431223ce2a18c8f944d544cba76b951ce0356d`
@@ -352,7 +366,7 @@ TF-EXEC-001·008·015·018·027·033의 경로 오류는 제품 테스트 결과
 
 TF-S8-EXEC-002의 JUnit XML은 `tests="12"`, `failures="2"`, `errors="0"`, `skipped="0"`, 타임스탬프 `2026-09-02T03:29:51`, suite time `0.647`을 기록했다. Gradle의 `BUILD FAILED`는 TF-TC-038 두 변형의 assertion 불일치 때문에 발생한 클래스 종합 결과이며 나머지 10개 변형의 Pass를 무효화하지 않는다.
 
-### 8.3 현재 테스트케이스 판정
+### 8.3 Stage 8 교정 당시 테스트케이스 판정
 
 | 케이스 | Stage 6 기록 | 오탐 확인 후 임시 판정 | TF-S8-EXEC-002 실제 결과 | 현재 판정 |
 |---|---|---|---|---|
@@ -370,3 +384,5 @@ TF-S8-EXEC-002의 JUnit XML은 `tests="12"`, `failures="2"`, `errors="0"`, `skip
 - 현재 Open 제품 결함은 TF-BUG-001·003~008, 총 7건이다.
 - TF-S8-EXEC-003 사용자 증거: [교정 ReviewController 사용자 실행 화면](../evidence/TF-S8-EXEC-003-review-controller-user-run.png) — 12개 중 10 Pass·2 Fail, 전체 522ms, TF-TC-038 평점 0·6 두 변형만 Fail; 109,409바이트, SHA-256 `F31B4A6B9BA2B05C4C1DBBF7B42F8E6C7F161F7B10C9BF5D2294842B14B969B4`.
 - 사용자 IntelliJ 교정 재현은 TF-S8-EXEC-002와 동일하며 현재 P0 집계에 중복 합산하지 않는다. 화면에 실행 시각·프로젝트 절대경로가 없어 임의로 기록하지 않는다.
+
+</details>

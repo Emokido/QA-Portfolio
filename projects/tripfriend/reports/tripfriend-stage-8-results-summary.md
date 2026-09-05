@@ -1,16 +1,24 @@
 # TripFriend QA 최종 결과·결함·증거 요약
 
-- 문서 상태: `QA 결과 정리 완료 — 사용자 승인`
-- 기준일: 2026-09-04
+- 문서 상태: `Stage 8 완료 이력 + 2026-09-05 제출본 교정 반영; 로컬 검토본`
+- 최초 결과 기준일: 2026-09-04
+- 최신 판정 교정일: 2026-09-05
 - 기준 제품 커밋: `e2431223ce2a18c8f944d544cba76b951ce0356d`
-- 현재 P0 판정: **43 Pass · 6 Fail · 0 Blocked · 0 Not Run**
+- 최신 P0 판정(2026-09-05 교정): **45 Pass · 4 Fail · 0 Blocked · 0 Not Run**
 - 실제 API·프런트 통합 검증: **7 Pass · 1 Fail · 0 Blocked · 0 Not Run**
 - 댓글·입력 중심 Postman 추가 검증: **5 Pass · 2 Fail · 0 Blocked**
 - 수동 프런트 탐색: **사용자 관찰 결함 6건 정식 등록 · 전체 실행 케이스 분모 미확인으로 별도 Pass/Fail 집계 없음**
-- Playwright E2E: **수정 후 정상 회귀 5/5 Pass · 등록 결함 3/3 예상대로 재현**
+- Playwright E2E: **QA 사본 교정 후 정상 회귀 5/5 Pass · 등록 결함 2건의 3개 시나리오 재현**
 - 실행 주체: `Codex with user authorization · User`; 사용자 IntelliJ·Postman·수동 프런트 탐색·Playwright 실행 완료
 
 > 이 문서의 Stage 6·7·8 표기는 QA 작업 순서와 실행 ID의 추적성을 보존하기 위한 내부 이력명이다. 공개 성과는 위의 업무 목적별 결과를 기준으로 읽는다.
+
+
+## 최신 교정과 집계 해석
+
+TF-REVIEW-EXEC-001에서 댓글 Controller 경계 4개를 실행해 모두 Pass했다. TF-TC-040·041은 실제 ResponseAspect 누락에 따른 오탐이어서 Pass로 정정했고 TF-BUG-004를 Closed 처리했다. [교정 보고서](portfolio-review-correction-report.md)에 실행 근거와 한계를 기록했다.
+
+현재 P0는 케이스별 최신 결과의 누적 집계다. 아래 Stage 8 실행 이력의 43 Pass·6 Fail과 완료 당시 결함 수는 역사 기록이다. Playwright 5/5는 CORS·접근성 속성·수정 폼 초기화 등을 교정한 QA 실행 사본에서 얻은 기존 결과이며 원본 제품 5/5를 뜻하지 않는다.
 
 ## 1. 최종 결과 정리의 목적과 범위
 
@@ -125,8 +133,8 @@ TF-S8-EXEC-002의 `BUILD FAILED`는 TF-TC-038 두 변형의 실제 assertion 불
 
 ## 4. 현재 P0 판정
 
-- Pass 43개: `TF-TC-001~007`, `009~026`, `028~037`, `039`, `042`, `044~049`.
-- Fail 6개: `TF-TC-008`, `027`, `038`, `040`, `041`, `043`.
+- Pass 45개: `TF-TC-001~007`, `009~026`, `028~037`, `039~042`, `044~049`.
+- Fail 4개: `TF-TC-008`, `027`, `038`, `043`.
 - Blocked 0개.
 - Not Run 0개.
 
@@ -137,7 +145,7 @@ TF-S8-EXEC-002의 `BUILD FAILED`는 TF-TC-038 두 변형의 실제 assertion 불
 | TF-BUG-001 | Open | TF-TC-008 |
 | TF-BUG-002 | Closed — Not a Product Defect / Test Setup False Positive | TF-TC-030·031·034·035·037의 과거 오탐 기록 보존 |
 | TF-BUG-003 | Open | TF-TC-038 |
-| TF-BUG-004 | Open | TF-TC-040·041 |
+| TF-BUG-004 | Closed — Test Setup False Positive | TF-TC-040·041, TF-REVIEW-EXEC-001에서 Pass |
 | TF-BUG-005 | Open | TF-TC-027 |
 | TF-BUG-006 | Open | TF-TC-043 |
 | TF-BUG-007 | Open; QA 실행 사본 재검증 Pass | Stage 7 CORS 흐름 |
@@ -150,7 +158,7 @@ TF-S8-EXEC-002의 `BUILD FAILED`는 TF-TC-038 두 변형의 실제 assertion 불
 | TF-BUG-014 | Open | 댓글 길이 오류의 구체적 안내 손실 · TF-E2E-006 1자·101자 재현 |
 | TF-BUG-015 | Open; QA execution patch retest passed | 리뷰 수정 폼 기존 값 비동기 초기화 실패 |
 
-현재 Open 결함 기록은 TF-BUG-001·003~015 총 14건이다. 이 중 TF-BUG-012는 제품 인원 정책 확인이 필요하고, TF-BUG-013은 환경 제한 관찰로 후속 재검증을 보류해 자동화 성공률과 대표 결함 성과에서 제외한다. TF-BUG-015는 QA 실행 사본 재검증만 Pass했으며 원본 제품에는 반영하지 않았다.
+현재 Open 결함·관찰 기록은 TF-BUG-001·003·005~015 총 13건이다. TF-BUG-002·004는 테스트 구성 오탐으로 Closed했다. 이 중 TF-BUG-012는 제품 인원 정책 확인이 필요하고, TF-BUG-013은 환경 제한 관찰로 후속 재검증을 보류해 자동화 성공률과 대표 결함 성과에서 제외한다. TF-BUG-015는 QA 실행 사본 재검증만 Pass했으며 원본 제품에는 반영하지 않았다.
 
 ## 6. 증거와 주장 경계
 
@@ -165,17 +173,17 @@ TF-S8-EXEC-002의 `BUILD FAILED`는 TF-TC-038 두 변형의 실제 assertion 불
 - 수동 탐색 6건의 화면 증거는 사용자 내부 원본에서 확인했다. 원본에는 Severity·Priority 미기입, 초안 문구와 오탈자가 남아 있어 공개 범위에서 제외하고 정제된 결함 보고서와 수동 탐색 보고서를 공식 산출물로 사용한다.
 - TF-BUG-011의 최대 길이, TF-BUG-012의 모집 인원 정책, TF-BUG-013의 중복 방지 단위는 임의로 확정하지 않는다.
 - 대표 증거 22개의 파일 존재·이미지 가독성·문서 참조·상대 링크를 확인했고 깨진 상대 링크는 0개였다. 19개는 현재 공개 후보로 유지한다.
-- Stage 7 브라우저 증거 3개(`TF-S7-EXEC-003`, `TF-S7-EXEC-007`, `TF-S7-RETEST-001`)는 DevTools Initiator에 로컬 사용자 경로가 보여 원본은 보존하되 현재 공개 대상에서 제외한다. 공개 전 재캡처 또는 비식별 사본이 필요하다.
+- Stage 7 브라우저 증거 3개(`TF-S7-EXEC-003`, `TF-S7-EXEC-007`, `TF-S7-RETEST-001`)는 DevTools Initiator에 로컬 사용자 경로가 보여 원본은 보존하되 현재 공개 대상에서 제외한다. 해당 이미지 없이 공개했으며 추가 이미지는 제출 필수 조건이 아니다.
 - 따라서 P0 49건 전체 정상, 전체 애플리케이션 정상, 실제 외부 DB·Redis·Security 전체 정상이라고 주장하지 않는다.
-- 현재 근거 있는 표현은 `P0 49개 모두 제품 검증 지점에 도달했고 43 Pass·6 Fail이며, 테스트 구성 때문에 남은 Blocked는 없다`이다.
+- 현재 근거 있는 표현은 `P0 49개 케이스의 최신 누적 판정은 45 Pass·4 Fail이며, 테스트 구성 때문에 남은 Blocked는 없다`이다.
 
-## 7. Stage 8 완료 판단과 후속 작업
+## 7. Stage 8 완료 당시 판단과 후속 계획
 
 1. TF-BUG-013은 추가 재검증 없이 환경 제한 관찰·후속 보류로 유지하고 Stage 8 blocker, 자동화 성공률, 대표 결함 성과에서 제외했다.
 2. 대표 증거 22개와 수동 탐색 원본의 공개 적합성을 검토하고 공개 제외 자료와 공식 산출물 경계를 정했다.
 3. Open 14건·Closed 오탐 1건의 테스트·실행·증거·재검증 연결을 대조했다.
 4. 사용자 완료 승인에 따라 Stage 8을 완료로 전환했다.
 5. 다음 진행 대상은 `Stage 8A — TripFriend Playwright GitHub Actions CI 보강`이다. 정상 회귀 5개를 필수 CI 대상으로 삼고 Known Defect는 별도 비차단 실행으로 분리한다. 워크플로 설계·실행·Git 반영은 별도 승인 후 진행한다.
-6. 공개 Git 체크포인트 전에 로컬 경로가 노출된 Stage 7 브라우저 증거 3개를 재캡처하거나 비식별 사본으로 교체하고 관련 링크를 다시 검증한다.
+6. Public 제출본에서는 로컬 경로 노출 증거 3개를 제외했다. TF-BUG-015 추가 이미지와 원본 trace 공개는 이번 범위에 포함하지 않는다.
 
 상세 Stage 6 실행 역사는 [P0 백엔드 테스트 실행 보고서](p0-backend-test-execution-report.md), Stage 7 실행은 [API·프런트 흐름 실행 보고서](api-frontend-flow-execution-report.md), 개별 결함은 [결함 폴더](../defects/)를 사용한다.

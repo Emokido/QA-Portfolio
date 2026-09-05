@@ -1,18 +1,28 @@
-# TF-BUG-004 — 댓글 생성 성공 응답이 HTTP 201 대신 200을 반환함
+# TF-BUG-004 — 댓글 생성 HTTP 상태 테스트 구성 오탐
 
-- 결함 상태: `Open`
+- 현재 상태: `Closed — Not a Product Defect / Test Setup False Positive`
+- 정정일: 2026-09-05
+- 최초 등록일: 2026-08-31
 - 발견일: 2026-08-31
-- 등록일: 2026-08-31
-- 기준 프로젝트: 스프린트 1 Java/Spring 완성본
 - 기준 커밋: `e2431223ce2a18c8f944d544cba76b951ce0356d`
-- 영향 기능: 댓글 생성 응답 계약
-- 테스트 수준: 독립형 MockMvc Controller 단위 테스트
-- 심각도: `Minor`
-- 수정 우선순위: 제품 담당자 결정 필요
-- 재현성: 검증 지점에 도달한 실행 2/2에서 동일 실패
-- 보고 주체: `Codex with user authorization`, 사용자 직접 재현 확인
+- 최초 심각도 제안: Minor — 오탐 정정으로 제품 심각도 적용 철회
+- 교정 실행: `TF-REVIEW-EXEC-001` · Codex with user authorization
+- 연결 케이스: TF-TC-040·041 — 교정 후 Pass
 
-> 이 결함은 Stage 5 Baseline의 HTTP 201 오라클과 Codex·사용자 실행의 동일한 기대 201·실제 200 결과를 근거로 등록한다. 댓글 생성 자체의 실패나 실제 DB 저장 실패는 이번 테스트에서 확인하지 않았다.
+## 현재 결론과 정정 근거
+
+실제 응답 상태를 설정하는 `ResponseAspect`가 빠진 독립형 MockMvc에서 관찰한 HTTP 200을 제품 결함으로 잘못 일반화했다. 실제 Controller·예외 처리기·ResponseAspect를 포함한 Web MVC slice로 교정하자 댓글 2자·100자는 HTTP 201·본문 `201-1`을 반환하고 서비스 호출 검증도 통과했다. 범위 밖 1자·101자의 HTTP 400·본문·서비스 미호출까지 네 테스트 모두 Pass했다.
+
+제품 코드나 기대 assertion을 바꾸지 않았다. 기존 2/2 실패는 테스트 구성 문제의 반복 재현이며 제품 결함의 재현성 근거로 더 이상 사용하지 않는다. 기존 Postman 댓글 생성 Pass 기록과도 일치한다. 실제 DB 저장·Security 체인·배포 환경까지 검증했다는 뜻은 아니다.
+
+[교정 실행 결과와 누적 판정](../reports/portfolio-review-correction-report.md)
+
+## 최초 등록 이력 — 2026-08-31 당시 판단, 현재 결론 아님
+
+아래 원문은 당시 독립형 MockMvc의 관찰·가설·영향 추정과 재검증 계획을 보존한 것이다. 특히 10절의 HTTP 상태 설정 누락 추론과 테스트 오류 분리 완료 주장은 위 교정으로 철회됐다. 과거 Open·Fail·미실행 표현은 당시 상태다.
+
+<details>
+<summary>최초 결함 보고서와 과거 실행 근거 펼치기</summary>
 
 ## 1. 요약
 
@@ -124,3 +134,5 @@ at CommentControllerTest.createComment_acceptsContentAtMinimum(CommentController
 - 수정 코드와 수정 후 `Pass`는 아직 없다.
 - Java 결과로 Kotlin 구현의 동일 결함을 주장하지 않는다.
 - 제품 담당자가 심각도·수정 우선순위·배포 결정을 확정했다고 주장하지 않는다.
+
+</details>

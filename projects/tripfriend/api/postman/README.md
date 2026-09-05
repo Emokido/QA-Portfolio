@@ -2,13 +2,13 @@
 
 ## 목적
 
-이 폴더는 TripFriend의 실제 HTTP API 흐름을 사용자가 Postman에서 직접 재현하기 위한 공개 후보 자산이다. Stage 7은 비로그인 공개 리뷰와 인증 리뷰 생성 흐름을 보존하고, Stage 8은 댓글 CRUD·대표 인증·입력 검증·결함 확인 7개 요청을 선별해 보강한다.
+이 폴더는 TripFriend의 실제 HTTP API 흐름을 사용자가 Postman에서 직접 재현하기 위한 공개 실행 자산이다. Stage 7은 비로그인 공개 리뷰와 인증 리뷰 생성 흐름을 보존하고, Stage 8은 댓글 CRUD·대표 인증·입력 검증·결함 확인 7개 요청을 선별해 보강한다.
 
-`QA-PORTFOLIO.md`가 현재 단계·상태의 유일한 최신 기준이며 Collection은 실행 도구, 실행 보고서는 결과 기록으로 사용한다.
+Collection은 실행 도구이며 [최신 결과 요약](../../reports/tripfriend-stage-8-results-summary.md)과 [댓글 Controller 교정 결과](../../reports/portfolio-review-correction-report.md)가 공개 판정 근거다.
 
 ## 가져오기
 
-1. Postman에서 비공개 `TripFriend QA Portfolio` Workspace를 연다.
+1. Postman에서 본인의 비공개 Workspace를 만들거나 연다. Workspace 이름은 자유롭게 정한다.
 2. 현재 실행은 `Import`에서 `TripFriend-Stage8.postman_collection.json`을 선택한다. `TripFriend-Stage7.postman_collection.json`은 Stage 7 당시 실행 자산을 보존한 역사 파일이다.
 3. 다시 `Import`에서 `TripFriend-Local.postman_environment.template.json`을 선택한다.
 4. 우측 상단 Environment를 `TripFriend Local Template`로 선택한다.
@@ -38,10 +38,10 @@
 
 ## Stage 8 댓글·검증·결함 확인 실행
 
-Stage 8의 상세 목적·오라클·중단 조건은 `../../test-plan/postman-stage-8-test-plan.md`를 사용한다. JUnit P0 경계를 모두 반복하지 않고 실제 HTTP 계약과 요청 간 데이터 연결을 보여주는 대표 7개만 실행한다.
+Stage 8의 상세 목적·오라클·중단 조건은 [Postman 테스트 계획](../../test-plan/postman-stage-8-test-plan.md)를 사용한다. JUnit P0 경계를 모두 반복하지 않고 실제 HTTP 계약과 요청 간 데이터 연결을 보여주는 대표 7개만 실행한다.
 
 1. 먼저 `02 Authenticated Review`의 로그인·리뷰 생성·내 리뷰 저장 확인을 완료해 `accessToken`과 `createdReviewId`를 준비한다.
-2. `03 Comment / TF-S8-POSTMAN-001 인증 댓글 생성`을 보낸다. 기대 HTTP 201·code `201-1`이며, 실제 HTTP 200이면 TF-BUG-004 연결 Fail 후보로 기록하고 assertion을 바꾸지 않는다.
+2. `03 Comment / TF-S8-POSTMAN-001 인증 댓글 생성`을 보낸다. 기대 HTTP 201·code `201-1`이며, TF-BUG-004는 테스트 구성 오탐으로 Closed됐다. 실제 서버에서 200이 관찰되면 환경·구성과 원시 응답을 새로 확인하며 과거 결함 재현으로 자동 분류하지 않는다.
 3. `TF-S8-POSTMAN-002 리뷰별 댓글 조회`에서 생성 댓글이 보이는지 확인한다.
 4. `TF-S8-POSTMAN-003 본인 댓글 수정`과 `004 본인 댓글 삭제`를 순서대로 실행한다.
 5. `04 Validation & Security / TF-S8-POSTMAN-005`에서 Authorization·Cookie 없이 댓글 생성이 HTTP 401로 차단되는지 확인한다.
@@ -73,3 +73,7 @@ Stage 8의 상세 목적·오라클·중단 조건은 `../../test-plan/postman-s
 - 이 Template에는 로컬 URL과 비어 있는 변수 정의만 둔다.
 - 로컬 테스트 비밀번호와 토큰은 Postman의 비공개 로컬 값으로만 관리하고 공개 파일에 저장하지 않는다.
 - 실제 값이 든 Environment와 계정 정보를 Git에 포함하지 않는다.
+
+## 재현 환경의 경계
+
+이 Collection만으로 서버가 준비되지는 않는다. [자동화 재현 안내](../../automation/README.md#재현-조건과-공개-범위)의 기준 제품·테스트 설정·QA 변경 조건을 먼저 확인한다. 공개 템플릿에는 실제 비밀번호·토큰이 없고, 기존 로컬 계정 값을 제3자가 사용할 수 있다고 가정하지 않는다.

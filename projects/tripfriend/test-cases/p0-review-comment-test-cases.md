@@ -1,12 +1,14 @@
 # TripFriend 리뷰·댓글 P0 테스트케이스
 
+> 이 문서는 작성 당시의 설계·감사·계획 기준선입니다. 아래 상태와 미실행 표현은 해당 기록 시점에 한정됩니다. [최신 결과 요약](../reports/tripfriend-stage-8-results-summary.md)과 [2026-09-05 교정 결과](../reports/portfolio-review-correction-report.md)를 함께 확인하십시오.
+
 - 문서 상태: `Stage 5 Baseline — 사용자 검토·명시적 완료 승인 완료`
 - 작업 단계: `5단계 — TripFriend 테스트케이스와 데이터 설계`
 - 기준 프로젝트: 스프린트 1 Java/Spring 완성본
 - 기준 커밋: `e2431223ce2a18c8f944d544cba76b951ce0356d`
 - 우선순위 범위: `P0`
 - 테스트케이스 범위: `TF-TC-001~049`
-- 실행 상태: 모두 `Not Run`
+- 설계 당시 실행 상태: 모두 `Not Run`
 - 작성일: 2026-08-28
 - 작성 주체: `Codex with user-authorized file creation`
 
@@ -22,7 +24,7 @@
 | 데이터 변형 | Data Variant | 같은 절차에서 입력만 바꾸어 각각 독립 실행하는 하위 데이터 행 |
 | Not Run | Not Run | 테스트 실행을 시도하지 않은 상태 |
 
-`TF-TC-*`는 테스트케이스 ID다. 한 케이스에 A·B 데이터 변형이 있으면 실행 단계에서 각 변형을 별도 실행으로 기록한다. 현재는 설계만 했으므로 49개 케이스와 모든 데이터 변형의 상태가 `Not Run`이다.
+`TF-TC-*`는 테스트케이스 ID다. 한 케이스에 A·B 데이터 변형이 있으면 실행 단계에서 각 변형을 별도 실행으로 기록한다. 설계 기준선 작성 당시에는 실행 전이었으므로 49개 케이스와 모든 데이터 변형의 상태가 `Not Run`이다.
 
 ## 2. 5W1H
 
@@ -49,7 +51,7 @@
 
 ### 4.1 공개 조회와 대표 조회 예외
 
-| ID | 테스트 목적·수준 | 사전조건·데이터 | 절차 | 기대 결과·오라클 | 추적 | 상태 |
+| ID | 테스트 목적·수준 | 사전조건·데이터 | 절차 | 기대 결과·오라클 | 추적 | 작성 당시 상태 |
 |---|---|---|---|---|---|---|
 | TF-TC-001 | 비로그인 리뷰 목록 조회 · Controller/API | 비로그인, SORT-BASE | `GET /api/reviews` | HTTP 200, code `200-5`; 전체 리뷰와 계산 가능한 댓글 수·조회수가 반환됨 · API 명세·코드 계약 | TF-REQ-007, TF-COND-001 | Not Run |
 | TF-TC-002 | 비로그인 리뷰 상세 조회 · Controller/API | 비로그인, R-SORT-01 존재 | `GET /api/reviews/{id}` | HTTP 200, code `200-1`; 대상 리뷰 ID·제목·평점과 댓글 수가 일치함 · API 명세·코드 계약 | TF-REQ-007, TF-COND-001 | Not Run |
@@ -59,7 +61,7 @@
 
 ### 4.2 리뷰 생성·수정·삭제
 
-| ID | 테스트 목적·수준 | 사전조건·데이터 | 절차 | 기대 결과·오라클 | 추적 | 상태 |
+| ID | 테스트 목적·수준 | 사전조건·데이터 | 절차 | 기대 결과·오라클 | 추적 | 작성 당시 상태 |
 |---|---|---|---|---|---|---|
 | TF-TC-004 | 유효한 리뷰 생성 · Service/Controller | 작성자 A 인증, P-SEOUL, REVIEW-VALID | `POST /api/reviews` | HTTP 201, code `201-1`; 작성자 A·장소·제목·내용·평점 저장, 조회수 0 생성 · 요구사항·코드 계약 | TF-REQ-002, TF-REQ-009, TF-COND-002, TF-RISK-008 | Not Run |
 | TF-TC-005 | 장소 ID null 리뷰 생성 · DTO/Controller | 작성자 A 인증, `placeId=null` | 생성 요청 | HTTP 400, code `400-1`; 리뷰·조회수 미생성 · 코드 입력 계약 | TF-REQ-002, TF-REQ-012, TF-COND-002, TF-COND-007, TF-COND-011 | Not Run |
@@ -74,7 +76,7 @@
 
 ### 4.3 댓글 생성·수정·삭제
 
-| ID | 테스트 목적·수준 | 사전조건·데이터 | 절차 | 기대 결과·오라클 | 추적 | 상태 |
+| ID | 테스트 목적·수준 | 사전조건·데이터 | 절차 | 기대 결과·오라클 | 추적 | 작성 당시 상태 |
 |---|---|---|---|---|---|---|
 | TF-TC-014 | 유효한 댓글 생성 · Service/Controller | 작성자 A 인증, R-COMMENT-TARGET, COMMENT-VALID | `POST /api/comments` | HTTP 201, code `201-1`; 대상 리뷰와 작성자 A에 연결된 댓글 저장 · API 명세·코드 계약 | TF-REQ-008, TF-REQ-009, TF-COND-005 | Not Run |
 | TF-TC-015 | 작성자 댓글 수정 · Service/Controller | 작성자 A 인증, C-AUTHOR-A | 내용 변경 후 `PUT` | HTTP 200, code `200-4`; 내용 변경, 작성자·리뷰 연결 유지 · API 명세·코드 계약 | TF-REQ-008, TF-COND-005 | Not Run |
@@ -85,7 +87,7 @@
 
 ### 4.4 인증·인가 전달 경계
 
-| ID | 테스트 목적·수준 | 사전조건·데이터 | 절차 | 기대 결과·오라클 | 추적 | 상태 |
+| ID | 테스트 목적·수준 | 사전조건·데이터 | 절차 | 기대 결과·오라클 | 추적 | 작성 당시 상태 |
 |---|---|---|---|---|---|---|
 | TF-TC-020 | 비로그인 리뷰 생성 차단 · Security/Controller | 토큰·쿠키 없음 | 유효 데이터로 리뷰 생성 | 요청 거부, 리뷰·조회수 미생성; 정확한 401/403 형식은 현재 계약 관찰 · JWT 인증 요구사항 | TF-REQ-009, TF-COND-006, TF-RISK-008 | Not Run |
 | TF-TC-021 | 비로그인 리뷰 수정 차단 · Security/Controller | 토큰·쿠키 없음, R-UPDATE-A | `PUT` | 요청 거부, 리뷰 불변; 정확한 401/403 형식은 현재 계약 관찰 | TF-REQ-003, TF-REQ-009, TF-COND-006, TF-RISK-008 | Not Run |
@@ -99,7 +101,7 @@
 
 ### 4.5 리뷰 입력 경계
 
-| ID | 테스트 목적·수준 | 입력 데이터 | 절차 | 기대 결과·오라클 | 추적 | 상태 |
+| ID | 테스트 목적·수준 | 입력 데이터 | 절차 | 기대 결과·오라클 | 추적 | 작성 당시 상태 |
 |---|---|---|---|---|---|---|
 | TF-TC-029 | 제목 1자 최소 미만 · DTO/Controller | TITLE-LEN-01 | 리뷰 생성 | HTTP 400, code `400-1`; 미저장 · 코드 입력 계약 | TF-REQ-012, TF-COND-007, TF-COND-011 | Not Run |
 | TF-TC-030 | 제목 2자 최소 경계 · DTO/Controller | TITLE-LEN-02 | 리뷰 생성 | HTTP 201, code `201-1`; 제목 길이 2로 저장 · 코드 입력 계약 | TF-REQ-012, TF-COND-007 | Not Run |
@@ -114,7 +116,7 @@
 
 ### 4.6 댓글 입력 경계
 
-| ID | 테스트 목적·수준 | 입력 데이터 | 절차 | 기대 결과·오라클 | 추적 | 상태 |
+| ID | 테스트 목적·수준 | 입력 데이터 | 절차 | 기대 결과·오라클 | 추적 | 작성 당시 상태 |
 |---|---|---|---|---|---|---|
 | TF-TC-039 | 댓글 1자 최소 미만 · DTO/Controller | COMMENT-LEN-01 | 댓글 생성 | HTTP 400, code `400-1`; 미저장 · 코드 입력 계약 | TF-REQ-012, TF-COND-008, TF-COND-011 | Not Run |
 | TF-TC-040 | 댓글 2자 최소 경계 · DTO/Controller | COMMENT-LEN-02 | 댓글 생성 | HTTP 201, code `201-1`; 길이 2로 저장 · 코드 입력 계약 | TF-REQ-008, TF-REQ-012, TF-COND-008 | Not Run |
@@ -124,7 +126,7 @@
 
 ### 4.7 검색·장소 필터·단일 정렬
 
-| ID | 테스트 목적·수준 | 사전조건·데이터 | 절차 | 기대 결과·오라클 | 추적 | 상태 |
+| ID | 테스트 목적·수준 | 사전조건·데이터 | 절차 | 기대 결과·오라클 | 추적 | 작성 당시 상태 |
 |---|---|---|---|---|---|---|
 | TF-TC-044 | 제목 키워드 단독 검색 · Repository/Controller | SORT-BASE, 키워드 `부산` | `GET /api/reviews?keyword=부산` | HTTP 200, code `200-5`; R-SORT-01·03만 반환, 최신순 03→01 · 명시 요구사항·코드 계약 | TF-REQ-001, TF-COND-009, TF-RISK-004 | Not Run |
 | TF-TC-045 | 장소 단독 필터 · Repository/Controller | SORT-BASE, P-BUSAN | `GET /api/reviews?placeId={P-BUSAN}` | HTTP 200, code `200-5`; R-SORT-01·03만 반환, 최신순 03→01 · 명시 요구사항·코드 계약 | TF-REQ-007, TF-COND-009 | Not Run |

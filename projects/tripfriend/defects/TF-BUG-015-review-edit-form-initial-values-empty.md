@@ -22,7 +22,7 @@
 
 ## 2. 추적 연결
 
-`TF-REQ-007 리뷰 CRUD → TF-E2E-003-B → TF-S8-PW-EXEC-004~007 → TF-BUG-015 → TF-S8-PW-RETEST-001·EXEC-008`
+`TF-REQ-003 본인 리뷰 수정·삭제 / TF-REQ-007 기존 리뷰 조회 → TF-E2E-003-B → TF-S8-PW-EXEC-004~007 → TF-BUG-015 → TF-S8-PW-RETEST-001·EXEC-008`
 
 | 식별자 | 연결 내용 |
 |---|---|

@@ -1,5 +1,7 @@
 # TripFriend 리뷰·댓글 P0 테스트 데이터 설계
 
+> 이 문서는 작성 당시의 설계·감사·계획 기준선입니다. 아래 상태와 미실행 표현은 해당 기록 시점에 한정됩니다. [최신 결과 요약](../reports/tripfriend-stage-8-results-summary.md)과 [2026-09-05 교정 결과](../reports/portfolio-review-correction-report.md)를 함께 확인하십시오.
+
 - 문서 상태: `Stage 5 Baseline — 사용자 검토·명시적 완료 승인 완료`
 - 작업 단계: `5단계 — TripFriend 테스트케이스와 데이터 설계`
 - 기준 프로젝트: 스프린트 1 Java/Spring 완성본

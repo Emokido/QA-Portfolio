@@ -1,5 +1,7 @@
 # TripFriend 리뷰·댓글 테스트 베이시스와 기능 흐름 분석
 
+> 이 문서는 작성 당시의 설계·감사·계획 기준선입니다. 아래 상태와 미실행 표현은 해당 기록 시점에 한정됩니다. [최신 결과 요약](../reports/tripfriend-stage-8-results-summary.md)과 [2026-09-05 교정 결과](../reports/portfolio-review-correction-report.md)를 함께 확인하십시오.
+
 - 문서 상태: `Stage 2 Baseline`
 - 작업 단계: `2단계 — TripFriend 테스트 대상 이해와 기능 흐름 분석`
 - 테스트 실행 상태: `Not Run`

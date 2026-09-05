@@ -1,5 +1,7 @@
 # TripFriend 리뷰·댓글 요구사항–코드 추적표
 
+> 이 문서는 작성 당시의 설계·감사·계획 기준선입니다. 아래 상태와 미실행 표현은 해당 기록 시점에 한정됩니다. [최신 결과 요약](../reports/tripfriend-stage-8-results-summary.md)과 [2026-09-05 교정 결과](../reports/portfolio-review-correction-report.md)를 함께 확인하십시오.
+
 - 문서 상태: `Stage 2 Baseline`
 - 기준 프로젝트: 스프린트 1 Java/Spring
 - 기준 커밋: `e2431223ce2a18c8f944d544cba76b951ce0356d`
@@ -43,7 +45,7 @@
 
 ## 3. 추적 매트릭스
 
-| 요구사항·기준 ID | 기능·품질 항목 | 오라클 또는 확인 기준 | 근거 유형 | 주요 코드 추적 | 연결 위험 | 상태 |
+| 요구사항·기준 ID | 기능·품질 항목 | 오라클 또는 확인 기준 | 근거 유형 | 주요 코드 추적 | 연결 위험 | 작성 당시 상태 |
 |---|---|---|---|---|---|---|
 | TF-REQ-001 | 리뷰 검색 | 사용자가 원하는 여행지 후기를 검색할 수 있어야 함 | 2차 요구사항 | `GET /api/reviews?keyword=`, Review Controller·Repository | TF-RISK-004 | 코드 확인 / Not Run |
 | TF-REQ-002 | 리뷰 작성 | 인증 사용자가 존재하는 여행지에 제목·내용·평점을 포함한 리뷰를 작성할 수 있어야 함 | 2차 요구사항 + 코드 입력 계약 | `POST /api/reviews`, ReviewRequestDto·ReviewService | 없음 | 코드 확인 / Not Run |

@@ -6,19 +6,31 @@ import com.tripfriend.domain.member.member.entity.Member;
 import com.tripfriend.domain.member.member.service.AuthService;
 import com.tripfriend.domain.review.dto.CommentRequestDto;
 import com.tripfriend.domain.review.service.CommentService;
-import com.tripfriend.global.exception.GlobalExceptionHandler;
+import com.tripfriend.global.aspect.ResponseAspect;
+import com.tripfriend.global.filter.DeletedMemberFilter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.context.annotation.FilterType;
+import org.springframework.context.annotation.Import;
+import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.same;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -27,30 +39,49 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@WebMvcTest(
+        controllers = CommentController.class,
+        properties = "spring.config.name=application-test",
+        excludeFilters = @ComponentScan.Filter(
+                type = FilterType.ASSIGNABLE_TYPE,
+                classes = DeletedMemberFilter.class
+        )
+)
+@ActiveProfiles("test")
+@AutoConfigureMockMvc(addFilters = false)
+@Import({ResponseAspect.class, CommentControllerTest.AspectTestConfiguration.class})
 class CommentControllerTest {
 
     private static final String AUTHORIZATION = "Bearer test-token";
 
+    @MockBean
     private CommentService commentService;
+
+    @MockBean
     private AuthService authService;
+
+    @MockBean
+    private JpaMetamodelMappingContext jpaMetamodelMappingContext;
+
+    @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
     private ObjectMapper objectMapper;
+
     private Member author;
 
     @BeforeEach
     void setUp() {
-        commentService = mock(CommentService.class);
-        authService = mock(AuthService.class);
-        CommentController commentController = new CommentController(commentService, authService);
-        mockMvc = MockMvcBuilders
-                .standaloneSetup(commentController)
-                .setControllerAdvice(new GlobalExceptionHandler())
-                .build();
-        objectMapper = new ObjectMapper();
         author = Member.builder()
                 .id(1L)
                 .nickname("작성자 A")
                 .build();
+    }
+
+    @TestConfiguration
+    @EnableAspectJAutoProxy(proxyTargetClass = true)
+    static class AspectTestConfiguration {
     }
 
     @Test

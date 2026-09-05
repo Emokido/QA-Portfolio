@@ -7,7 +7,7 @@
 - Java·Spring Boot: Java 17 / 빌드 파일 기준 Spring Boot 3.2.4
 - 도구: JUnit 5, Mockito, AssertJ, Spring MockMvc, Spring Security Test, Spring Data JPA `@DataJpaTest`, H2
 - 실행 기간: 2026-08-28~2026-09-02
-- 현재 제품 판정: P0 49개 중 43 Pass·6 Fail·0 Not Run·product-test Blocked 0
+- 최신 누적 판정: P0 49개 중 45 Pass·4 Fail·0 Not Run·product-test Blocked 0 (2026-09-05 댓글 Controller 교정 반영)
 
 > 이 폴더만으로 독립 실행되는 프로젝트가 아니다. 위 기준 제품 저장소의 같은 패키지 구조에 적용한 테스트 소스이며, 제품 코드와 Gradle Wrapper·의존성·테스트 프로필이 필요하다.
 
@@ -16,7 +16,7 @@
 - `backend/`: JUnit 5·Mockito·MockMvc·H2 기반 P0 백엔드 자동화 사본
 - `playwright/`: 정상 회귀 5개 실행 단위와 Known Defect 3개 실행 변형을 분리한 프런트 E2E 독립 프로젝트
 
-Playwright 정상 회귀는 수정 후 전체 실행에서 `5 Pass·0 Fail·0 Blocked`다. Known Defect 3개 실행 변형은 `0 Pass·3 Fail·0 Blocked`로 TF-BUG-010과 TF-BUG-014의 1자·101자 경계를 재현했다. 101자의 dialog 처리 지연을 교정한 단일 재실행에서도 같은 제품 Fail과 fixture cleanup을 확인했다. 설치된 Chrome channel을 사용하고 실제 계정 값은 환경변수로만 받는다. 실행·데이터 격리·한계는 [Playwright README](playwright/README.md)를 사용한다.
+Playwright 정상 회귀는 CORS·접근성 속성·수정 폼 초기화를 교정한 QA 사본의 기존 전체 실행에서 `5 Pass·0 Fail·0 Blocked`다. Known Defect 3개 실행 변형은 `0 Pass·3 Fail·0 Blocked`로 TF-BUG-010과 TF-BUG-014의 1자·101자 경계를 재현했다. 101자의 dialog 처리 지연을 교정한 단일 재실행에서도 같은 제품 Fail과 fixture cleanup을 확인했다. 설치된 Chrome channel을 사용하고 실제 계정 값은 환경변수로만 받는다. 실행·데이터 격리·한계는 [Playwright README](playwright/README.md)를 사용한다.
 
 후속 작업에서는 정상 회귀 5개를 GitHub Actions CI에 연결하고, 등록 결함 재현 실행은 필수 회귀 job과 분리할 예정이다. 워크플로와 CI 실행 결과는 아직 생성·실행하지 않았다.
 
@@ -27,7 +27,7 @@ Playwright 정상 회귀는 수정 후 전체 실행에서 `5 Pass·0 Fail·0 Bl
 | Service | `ReviewServiceTest` | 리뷰 생성·수정·삭제, 권한·미존재·여행지 변경 | 최신 10개 실행 중 9 Pass·1 Fail |
 | Service | `CommentServiceTest` | 댓글 CRUD, 작성자 권한·미존재 리뷰·댓글 | 6 Pass |
 | Controller | `ReviewControllerTest` | 제목·내용·평점 경계와 HTTP·본문 코드 | 테스트 구성 교정 후 12개 변형 중 10 Pass·2 Fail |
-| Controller | `CommentControllerTest` | 댓글 내용 경계와 HTTP·본문 코드 | 2 Pass·2 Fail |
+| Controller | `CommentControllerTest` | 댓글 내용 경계와 HTTP·본문 코드 | TF-REVIEW-EXEC-001 교정 후 4 Pass |
 | Repository/H2 | `ReviewRepositoryTest` | 제목 검색·장소 필터·결과 없음 | 3 Pass |
 | Service·Repository/H2 | `ReviewSortingIntegrationTest` | 최신순·평점순·댓글순·조회수순 | 4개 정렬 변형 Pass, TF-TC-046 Pass |
 | Controller·Service·Repository/H2 | `ReviewCommentNotFoundIntegrationTest` | 미존재 리뷰·댓글 상세 404와 데이터 불변 | 2 Pass |
@@ -72,10 +72,26 @@ backend/src/test/java/com/tripfriend/domain/review/
 
 - `BUILD FAILED` 자체를 모든 테스트의 Fail로 처리하지 않고 개별 검증 지점 도달 여부로 판정했다.
 - 환경·테스트 구성 문제는 제품 Fail과 분리하고 해소 후 같은 케이스를 다시 판정했다.
-- 현재 Open 결함 기록은 [결함 보고서 폴더](../defects/)의 TF-BUG-001·003~015 총 14건이다. TF-BUG-013은 환경 제한 관찰로 후속 보류하며 대표 결함 성과에서 제외하고, TF-BUG-015는 QA 실행 사본 재검증만 Pass했으며 원본 제품에는 반영하지 않았다.
-- TF-BUG-002는 실제 서버 반증과 테스트 구성 교정에 따라 `Closed — Not a Product Defect / Test Setup False Positive`로 보존한다. 제품 코드는 변경하지 않았다.
+- 현재 Open 결함 기록은 [결함 보고서 폴더](../defects/)의 TF-BUG-001·003·005~015 총 13건이다. TF-BUG-012는 정책 확인 필요 기록이다. TF-BUG-013은 환경 제한 관찰로 후속 보류하며 대표 결함 성과에서 제외하고, TF-BUG-015는 QA 실행 사본 재검증만 Pass했으며 원본 제품에는 반영하지 않았다.
+- TF-BUG-002·004는 실제 응답 구성 반증과 각각의 교정 테스트에 따라 `Closed — Not a Product Defect / Test Setup False Positive`로 보존한다. 제품 코드는 변경하지 않았다.
 - 교정 결과와 현재 집계는 [최종 QA 결과 요약](../reports/tripfriend-stage-8-results-summary.md)을 사용한다.
 
 ## 기여와 AI 활용
 
 Codex는 승인된 범위에서 테스트 코드 초안 작성, 실행과 오류 분석을 보조했다. 사용자는 테스트 목적·Mock·assertion·검증 한계를 단계별로 설명하고 IntelliJ에서 대표 클래스를 직접 재현했다. AI 작성 코드를 과거 개발 기여나 사용자 단독 작성으로 표현하지 않는다.
+
+
+## 재현 조건과 공개 범위
+
+| 대상 | 필요한 조건 | 공개 자료와 한계 |
+|---|---|---|
+| 백엔드 테스트 | Java 17, 기준 제품 커밋, 제품 Gradle 의존성, 같은 패키지의 테스트 소스, 안전한 `application-test` 설정 | 이 저장소에는 테스트 사본이 있다. 제품 Wrapper·설정 파일 전체는 제공하지 않아 이 저장소 단독 실행은 지원하지 않는다. |
+| Controller 교정 | 실제 응답 Aspect와 예외 처리기, Mock 서비스·인증·JPA metamodel, 비활성 Security 필터 | [CommentControllerTest](backend/src/test/java/com/tripfriend/domain/review/controller/CommentControllerTest.java)에 구성이 명시돼 있다. 실제 DB 저장을 증명하지 않는다. |
+| Postman | 로컬 H2 서버, 비저장 Redis, 테스트 회원·여행지, 로그인 후 생성 ID | Collection·빈 환경 템플릿 제공. 계정·서버 설정은 각자의 격리 환경에서 준비해야 한다. |
+| Playwright | 로컬 프런트·백엔드·Redis, 테스트 회원과 일치하는 여행지 ID/옵션명, Chrome 및 Playwright 실행 의존성 | [실행 안내](playwright/README.md)와 [fixture helper](playwright/helpers/api-fixtures.ts)를 제공한다. 준비 서버 없이 단독 E2E 실행은 불가능하다. |
+
+Playwright 5/5는 기준 제품 그대로의 결과가 아니다. QA 실행 사본에는 [CORS 교정](../defects/TF-BUG-007-localhost-cors-preflight-blocked.md), 별점 버튼의 접근성 속성, [수정 폼 초기화 교정](../defects/TF-BUG-015-review-edit-form-initial-values-empty.md)이 포함돼 있다. 정확한 QA patch·안전한 기동 프로필·fixture를 자동 재구성하는 패키지는 아직 공개하지 않았다. 따라서 새 환경에서 동일 5/5를 보장하지 않는다.
+
+`--offline`은 기존 의존성 캐시가 준비된 실행 환경에서 사용한 옵션이다. 최초 설치 절차를 대신하지 않는다. 누락 설정을 임의의 운영 비밀값으로 채우지 않는다. CI와 재현 환경 자동 구성은 후속 범위이며 현재 완료 성과로 표시하지 않는다.
+
+[2026-09-05 댓글 Controller 실행 결과와 판정 교정](../reports/portfolio-review-correction-report.md)

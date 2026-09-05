@@ -25,7 +25,7 @@
 - JUnit P0 49개의 모든 경계값을 Postman으로 반복하지 않는다.
 - Postman은 실제 HTTP 상태·본문 코드·인증·데이터 연결을 보여주는 대표 흐름에 집중한다.
 - 정상 댓글 CRUD는 하나의 생성 데이터로 연결하고 `createdReviewId`·`createdCommentId`를 전달한다.
-- 현재 Open 결함은 실제 HTTP에서 확인 가치가 높은 TF-BUG-003·004·006만 이번 단위에 연결한다.
+- 계획 당시 Open이었던 TF-BUG-003·004·006을 실제 HTTP 확인 대상으로 연결했다. 이후 TF-BUG-004는 2026-09-05 테스트 구성 오탐으로 Closed했다.
 - 기대 결과를 현재 제품 동작에 맞춰 낮추지 않는다. 불일치는 Fail 후보로 기록한다.
 - 제품 수정 후 재검증이 아니므로 `Defect Verification` 폴더에서 Open 결함의 실제 서버 재현·영향 확인으로 구분한다.
 
@@ -84,7 +84,11 @@ TF-S8-POSTMAN-004는 응답 계약까지만 확인한다. 삭제 후 실제 목�
 - `TF-S8-POSTMAN-007`은 HTTP 400이지만 기대 `400-2` 대신 실제 `400-1`을 반환해 TF-BUG-003을 재현했다.
 - `TF-S8-POSTMAN-006`은 로그인 후에도 HTTP 401과 빈 본문을 반환했다. 최초 assertion이 모든 4xx를 허용해 3/3 Passed로 표시했지만 입력 검증 성공을 입증하지 못하는 테스트 오탐이었다.
 - 사용자 승인 제한 진단에서 Codex는 로컬 로그인 1회와 동일한 null 요청 1회를 실행했다. 유효 토큰 발급 후 `CommentController.createComment` 처리 중 서버 예외가 발생해 기존 TF-BUG-006의 실제 HTTP 경로를 확인했다.
-- 요청 단위 최종 판정은 전체 13개 `11 Pass · 2 Fail · 0 Blocked`, Stage 8 신규 7개 `5 Pass · 2 Fail · 0 Blocked`다. 기존 P0 케이스의 대표 재현이므로 P0 43 Pass·6 Fail에는 중복 합산하지 않는다.
+- 요청 단위 최종 판정은 전체 13개 `11 Pass · 2 Fail · 0 Blocked`, Stage 8 신규 7개 `5 Pass · 2 Fail · 0 Blocked`다. 기존 P0 케이스의 대표 재현이므로 당시 P0 43 Pass·6 Fail에는 중복 합산하지 않는다.
 - 교정 Collection은 `accessToken` 사전조건을 검사하고, TF-S8-POSTMAN-006에 HTTP 400·401/403 미발생·JSON 오류 본문을 요구한다. 제품 동작은 변경하지 않았다.
 - 사용자 `TF-S8-POSTMAN-RETEST-001`에서 최신 Collection의 로그인 사전조건을 충족한 뒤 006을 재실행했다. 실제 HTTP 401·빈 본문에 대해 HTTP 400, 401·403 미발생, JSON 오류 본문 assertion이 모두 실패해 0/3으로 결함을 정상 탐지했다.
 - 제품 요청 TF-S8-POSTMAN-006의 판정은 Fail이며, assertion 교정 자체의 재검증은 Pass다. 제품 동작이나 기대값을 낮추지 않았다.
+
+## 제출본 후속 교정
+
+TF-BUG-004는 TF-REVIEW-EXEC-001에서 실제 응답 변환을 포함해 댓글 2자·100자의 HTTP 201을 확인한 뒤 테스트 구성 오탐으로 Closed했다. 본 문서의 Postman 실행 결과는 당시 기록으로 보존하며, [최신 누적 결과](../reports/portfolio-review-correction-report.md)는 P0 45 Pass·4 Fail이다.

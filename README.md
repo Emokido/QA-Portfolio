@@ -1,53 +1,36 @@
 # QA Engineer Portfolio
 
-팀 개발에 참여했던 TripFriend 웹 서비스를 독립적인 QA 대상으로 다시 분석하고,
-**요구사항 → 위험 → 테스트 → 실행 → 결함 → 재검증**을 증거로 연결한 포트폴리오입니다.
+팀 개발에 참여했던 TripFriend를 QA 대상으로 다시 분석하고 **요구사항 → 위험 → 테스트 → 실행 → 결함 → 재검증**을 증거로 연결했습니다. 리뷰·댓글 영역의 입력 경계, 권한, API·UI 계약을 검증하고 테스트 구성 오탐과 제품 문제를 구분했습니다.
 
-[TripFriend QA 사례 연구](projects/tripfriend/README.md) · [최종 결과와 판단 기준](projects/tripfriend/reports/tripfriend-stage-8-results-summary.md) · [자동화 코드](projects/tripfriend/automation/) · [결함 보고서](projects/tripfriend/defects/)
+[TripFriend QA 사례 연구](projects/tripfriend/README.md) · [최신 결과와 근거](projects/tripfriend/reports/tripfriend-stage-8-results-summary.md) · [자동화 코드](projects/tripfriend/automation/) · [결함·관찰 기록](projects/tripfriend/defects/)
 
-## QA 접근 방식
+## 핵심 결과
 
-- **실패 분류:** 제품 결함, 테스트 구성 문제, 실행 환경 문제를 같은 실패로 계산하지 않습니다.
-- **추적성:** 요구사항과 관찰 항목을 Risk, Test Condition, Test Case, 실행 결과, Defect까지 연결합니다.
-- **자동화 선정:** 비즈니스 중요도, 반복 비용, 회귀 위험, 명확한 합격·실패 기준을 바탕으로 자동화 대상을 고릅니다.
-- **판단 경계:** 제품 동작까지 확인하지 못했거나 정책이 불명확한 현상은 결함으로 단정하지 않습니다.
-
-## 수행 범위와 산출물
-
-TripFriend의 리뷰·댓글 영역을 대상으로 요구사항 분석부터 테스트 설계, 실행, 결함 추적, 재검증과 자동화까지 하나의 QA 흐름으로 수행했습니다.
-
-- **분석·설계:** 기능 흐름과 코드 계약을 분석하고, 요구사항 → Risk → Test Condition → Test Case로 이어지는 추적 구조와 핵심 테스트 49건을 설계했습니다.
-- **실행·자동화:** Java/Spring 테스트로 계층별 동작을 검증하고, Postman으로 실제 HTTP 요청·응답을 확인했으며, 반복 검증 가치가 높은 UI 경로를 Playwright로 자동화했습니다.
-- **결함 분석:** 실패를 제품 결함·테스트 구성 문제·환경 문제로 구분하고, 재현 조건·영향·가설·검증 결과·재검증 조건을 기록했습니다.
-- **주요 산출물:** 테스트 계획, 추적표, 테스트케이스, 실행 보고서, 결함 보고서, 자동화 코드, Postman Collection과 선별된 실행 증거를 공개합니다.
-
-[TripFriend 상세 수행 범위와 산출물 보기](projects/tripfriend/README.md)
-
-## 핵심 결과와 의미
-
-| 결과 | 의미 |
+| 결과 | 확인한 범위 |
 |---|---|
-| **핵심 우선순위 테스트(P0) 49건 — 43 Pass·6 Fail** | 사용자 영향과 위험도가 높은 49건 모두 제품 판정 단계까지 실행했습니다. 6건의 불일치는 숨기지 않고 결함과 연결했습니다. |
-| **핵심 API 추가 검증 7건 — 5 Pass·2 Fail** | 댓글 CRUD·입력·인증의 대표 흐름을 실제 HTTP 수준에서 확인하고 기존 결함 2건을 재현했습니다. |
-| **Playwright 정상 회귀 5/5 Pass** | 로그인, 검색, 리뷰 작성·수정·삭제, 댓글 등록의 핵심 사용자 경로가 별도 QA 환경에서 정상 작동함을 확인했습니다. |
-| **등록 결함 재현 시나리오 3/3** | 두 등록 결함(TF-BUG-010·014)에서 파생된 3개 시나리오가 예상대로 실패하며 기존 문제를 재현했습니다. 자동화 자체의 오류가 아니므로 정상 회귀 결과와 분리했습니다. |
-| **결함 기록 15건 — 14 Open·1 Closed** | 제품 결함 14건과 테스트 구성 오탐 1건을 구분하고 재현·영향·한계·재검증 조건을 남겼습니다. |
+| **P0 49건 — 누적 45 Pass·4 Fail** | 케이스별 최신 실행 근거를 집계했습니다. 댓글 Controller 교정으로 기존 오탐 2건을 Pass로 정정했으며, 49건 전체를 이번에 재실행한 결과는 아닙니다. |
+| **추가 API 검증 7건 — 5 Pass·2 Fail** | 댓글 CRUD·입력·인증을 실제 HTTP 수준에서 확인하고 기존 문제 2건을 재현했습니다. |
+| **QA 사본 교정 후 Playwright 정상 회귀 5/5 Pass** | 로그인·검색·리뷰·댓글의 선별 경로를 확인했습니다. CORS·접근성 속성·수정 폼 교정이 포함된 QA 사본의 결과이며 원본 제품 수정 완료를 뜻하지 않습니다. |
+| **등록 결함 재현 시나리오 3/3** | TF-BUG-010·014의 3개 변형이 예상 동작과 불일치했습니다. 정상 회귀 성공률과 분리했습니다. |
 
-## 결과를 해석한 기준
+결함·관찰 기록은 **15건 — 13 Open·2 Closed(테스트 구성 오탐)**입니다. Open 기록에는 정책 확인이 필요한 TF-BUG-012와 환경 제한 관찰인 TF-BUG-013이 포함돼 있으며, 전체를 확정 제품 결함 수로 표현하지 않습니다.
 
-테스트 결과는 실행 도구가 표시한 Pass/Fail만으로 확정하지 않았습니다. 실제 제품 동작까지 확인했는지, 테스트 구성이 실제 응답 구조를 반영했는지, 환경 문제로 검증이 중단된 것인지를 구분했습니다. 또한 통과한 테스트도 잘못된 응답을 허용하고 있지 않은지 확인해 판정 기준의 유효성을 다시 검증했습니다.
+[2026-09-05 댓글 Controller 판정 교정](projects/tripfriend/reports/portfolio-review-correction-report.md) · [전체 결과·실행 이력](projects/tripfriend/reports/tripfriend-stage-8-results-summary.md)
 
-## 대표 판단 사례
+## 대표 QA 판단
 
-- [리뷰 수정 폼 초기값 결함(TF-BUG-015)](projects/tripfriend/defects/TF-BUG-015-review-edit-form-initial-values-empty.md): 자동화 문제 가능성을 확인한 뒤 제품 Fail로 재분류하고, 첫 원인 가설을 반증한 후 별도 QA 환경의 재검증과 전체 회귀까지 연결했습니다.
-- [제품 결함이 아니었던 테스트 구성 오탐(TF-BUG-002)](projects/tripfriend/defects/TF-BUG-002-review-create-http-status-200.md): 실제 서버 결과로 기존 MockMvc 구성을 반증하고 연결 테스트 5건을 교정했습니다.
-- [초록색 API 테스트의 거짓 통과(TF-BUG-006)](projects/tripfriend/defects/TF-BUG-006-comment-review-id-null-request-processing-exception.md): HTTP 401·빈 본문을 허용하던 넓은 assertion을 발견하고 정확한 상태·본문 기준으로 다시 검증했습니다.
+- **사용자 변경이 실제 데이터에 반영되는가:** [리뷰 여행지 변경 미반영](projects/tripfriend/defects/TF-BUG-001-review-place-not-updated.md)에서 요청 성공 여부와 연결 여행지 갱신을 구분했습니다.
+- **테스트 실패가 제품 결함인가:** [리뷰 생성 오탐](projects/tripfriend/defects/TF-BUG-002-review-create-http-status-200.md)을 실제 서버 응답으로 반증했고, 제출본 검토에서 [댓글 생성](projects/tripfriend/defects/TF-BUG-004-comment-create-http-status-200.md)에도 같은 구성 누락을 확인해 판정을 정정했습니다.
+- **첫 원인 가설이 맞는가:** [수정 폼 초기값 문제](projects/tripfriend/defects/TF-BUG-015-review-edit-form-initial-values-empty.md)의 route 가설을 반증하고 QA 사본 교정 후 단일 재검증·전체 회귀를 확인했습니다.
+- **초록색 테스트도 잘못될 수 있는가:** [댓글 입력 검증](projects/tripfriend/defects/TF-BUG-006-comment-review-id-null-request-processing-exception.md)에서 HTTP 401·빈 본문을 통과시키던 넓은 assertion을 교정했습니다.
 
-## 추천 열람 순서
+## 수행 범위와 열람 안내
 
-1. [TripFriend QA 사례 연구](projects/tripfriend/README.md) — 범위, 전략, 결과, 대표 판단
-2. [최종 결과와 판단 기준](projects/tripfriend/reports/tripfriend-stage-8-results-summary.md) — 전체 수치와 실행 근거
-3. [리뷰 수정 폼 초기값 결함](projects/tripfriend/defects/TF-BUG-015-review-edit-form-initial-values-empty.md) — 가설 검증·반증·재검증 사례
-4. [Playwright 자동화](projects/tripfriend/automation/playwright/) — 정상 회귀와 등록 결함 재현 분리
+요구사항·코드 계약 분석, 위험 기반 계획, 테스트케이스 49건, JUnit·MockMvc·H2 테스트, Postman HTTP 검증, 수동 탐색과 Playwright 선별 자동화를 수행했습니다. 기대 결과의 출처와 실행 증거를 ID로 연결하고, 제품·구성·환경 문제 및 정책 미확정 관찰을 구분했습니다.
 
-과거 개발 기여와 현재 QA 활동은 구분해 기록했습니다. Codex는 코드 탐색과 초안 구조화를 보조했으며, 테스트 범위·합격 기준·결함 판정은 작성자가 실제 증거를 검토하고 대표 실행을 직접 재현해 확정했습니다.
+1. [TripFriend 사례 연구](projects/tripfriend/README.md) — 사용자 영향·전략·대표 판단
+2. [최신 결과 요약](projects/tripfriend/reports/tripfriend-stage-8-results-summary.md) — 판정과 근거
+3. [테스트케이스](projects/tripfriend/test-cases/p0-review-comment-test-cases.md) · [추적표](projects/tripfriend/test-plan/requirements-code-traceability.md) — 설계 기준선
+4. [자동화와 재현 조건](projects/tripfriend/automation/) — 구현·실행 조건·확인 한계
+
+과거 개발 기여와 이번 QA 활동은 구분합니다. Codex는 코드 탐색·초안·승인된 실행과 오류 분석을 보조했고, 작성자는 범위와 판정 근거를 검토하며 대표 실행을 직접 재현했습니다. 개별 실행자는 각 보고서에 기록했습니다.
