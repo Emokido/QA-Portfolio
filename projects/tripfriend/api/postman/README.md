@@ -57,7 +57,7 @@ Stage 8의 상세 목적·기대 결과 기준·중단 조건은 [Postman 테스
 - `TF-S8-POSTMAN-EXEC-001`은 13개 요청·42개 assertion을 완료했고 Postman 화면에는 41 Passed·1 Failed·0 Errors로 표시됐다.
 - TF-S8-POSTMAN-007은 실제 `400-1`로 TF-BUG-003을 재현했다.
 - TF-S8-POSTMAN-006은 HTTP 401·빈 본문인데도 최초의 넓은 4xx assertion 때문에 통과한 테스트 오탐이었다. 추가 재현과 제한된 진단에서 기존 TF-BUG-006 경로로 판정했다.
-- 최신 Collection에서는 006의 assertion을 교정했다. 사TF-S8-POSTMAN-RETEST-001 재실행에서 로그인 후 006을 재실행해 HTTP 401·빈 본문을 0/3 Failed로 정상 탐지했다. 제품 요청은 TF-BUG-006 연결 Fail, assertion 교정 재검증은 Pass다.
+- 최신 Collection에서는 006의 assertion을 교정했다. TF-S8-POSTMAN-RETEST-001 재실행에서 로그인 후 006을 실행해 HTTP 401·빈 본문을 3개 검증 조건 모두 실패로 검출했다. 제품 요청은 TF-BUG-006 연결 Fail, assertion 교정 재검증은 Pass다.
 
 브라우저에서는 같은 로컬 테스트 회원으로 로그인한 뒤 `/community/write`에서 이미지 없이 리뷰를 작성한다. Network의 로그인·리뷰 생성·목록 요청 상태와 최종 리뷰 카드만 확인하며, 비밀번호·Authorization·Cookie·응답 토큰이 보이는 화면은 캡처하지 않는다.
 

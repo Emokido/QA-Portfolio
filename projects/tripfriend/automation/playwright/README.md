@@ -61,7 +61,7 @@ Known Defect는 제품 수정 전에는 실패가 기대된다. 정상 회귀의
 
 - `getByRole`, `getByLabel`, `getByPlaceholder`, 보이는 고유 텍스트를 우선한다.
 - CSS 경로와 순번 기반 `nth()`는 사용하지 않는다.
-- 실행용 프런트 리뷰 별점 버튼에는 QA 검증용으로 추가한 접근성 속성 `aria-label`과 `aria-pressed`를 추가해 `getByRole`로 선택한다.
+- 실행용 프런트 리뷰 별점 버튼에는 QA 검증용으로 접근성 속성 `aria-label`과 `aria-pressed`를 추가해 `getByRole`로 선택한다.
 - 댓글별 semantic container처럼 아직 안정적인 locator를 만들 수 없는 흐름은 보류했다.
 - 첫 단계에서는 인증 helper와 API fixture helper만 공통화했고 Page Object Model은 도입하지 않았다.
 
